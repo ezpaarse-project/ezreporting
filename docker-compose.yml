@@ -1,0 +1,50 @@
+version: '2.2'
+services:
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.1
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - http_proxy
+      - https_proxy
+      - cluster.name=${CLUSTER_NAME}
+      - discovery.type=${DISCOVERY_TYPE}
+      - bootstrap.memory_lock=${BOOTSTRAP_MEMORY_LOCK}
+      - xpack.security.enabled=${XPACK_SECURITY_ENABLED}
+      - ELASTIC_PASSWORD=${ELASTICSEARCH_PASSWORD}
+      - ES_JAVA_OPTS
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: ${ES_MEM_LIMIT}
+    networks:
+      - elastic
+    restart: unless-stopped
+
+  kibana:
+    build:
+      context: ./
+    ports:
+      - 5601:5601
+      - 5603:5603
+    environment:
+      - http_proxy
+      - https_proxy
+      - ELASTICSEARCH_USERNAME=${KIBANA_SYSTEM}
+      - ELASTICSEARCH_PASSWORD
+      - KBN_OPTIMIZER_THEMES=v8light
+    volumes:
+      - ./config/kibana.dev.yml:/home/kbn-dev/kibana/config/kibana.dev.yml:ro
+      - ./config/kibana.keystore:/home/kbn-dev/kibana/config/kibana.keystore:ro
+    networks:
+      - elastic
+
+volumes:
+  esdata:
+    driver: local
+
+networks:
+  elastic:
+    driver: bridge

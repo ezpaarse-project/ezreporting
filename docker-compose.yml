@@ -35,9 +35,11 @@ services:
       - ELASTICSEARCH_USERNAME=${KIBANA_SYSTEM}
       - ELASTICSEARCH_PASSWORD
       - KBN_OPTIMIZER_THEMES=v8light
+      - KIBANA_VERSION
     volumes:
       - ./config/kibana.dev.yml:/home/kbn-dev/kibana/config/kibana.dev.yml:ro
       - ./config/kibana.keystore:/home/kbn-dev/kibana/config/kibana.keystore:ro
+      - ./src:/home/kbn-dev/kibana/plugins/ezreporting
     networks:
       - elastic
 

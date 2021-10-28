@@ -2,6 +2,7 @@
 
 ## Prerequisites
 [Docker](https://www.docker.com/) and [docker-compose](https://docs.docker.com/compose/)
+[Yarn](https://yarnpkg.com/)
 
 ## Installation & configuration
 
@@ -22,6 +23,12 @@ $ docker run --rm -it -v $(pwd)/config:/usr/share/kibana/config docker.elastic.c
 
 > Enter value for elasticsearch.password: # enter default password (changeme) or your password if you have changed it
 
+curl -X PUT \
+  -d "{ \"password\": \"${ELASTICSEARCH_PASSWORD}\" }" \
+  -u "${ELASTICSEARCH_USERNAME}:${ELASTICSEARCH_PASSWORD}" \
+  -H 'Content-Type: application/json' \
+  http://localhost:9200/_security/user/kibana_system/_password
+
 # Build Kibana
 $ make kbn-build
 
@@ -30,6 +37,9 @@ $ docker-compose run --rm -u kbn-dev kibana chown kbn-dev -R /home/kbn-dev/kiban
 
 # Run Kibana
 $ make kbn-start
+
+# Install plugin dependencies
+$ cd src; yarn install
 ```
 
 Access your Kibana instance through the following url: ``http://localhost:5603/kibana``
@@ -42,7 +52,25 @@ $ make build
 
 A ``.zip`` archive will be generated and will be located in the ``src/build`` folder
 
-An output filed
+## Publish a new release
+
+```bash
+$ cd ./src
+$ npm version (major|minor|patch)
+
+$ gh login
+$ gh release create <tag> # eg: gh release create v2.0.0
+$ gh release upload <tag> <file> # eg: gh release upload v2.0.0 ./src/build/ezReporting-7.14.zip 
+```
+
+## Installation in Kibana
+
+You need to run the following command at the location where you installed Kibana
+
+```bash
+$ bin/kibana-plugin install https://github.com/ezpaarse-project/ezreporting/releases/download/vX.X.X/ezReporting-7.14.zip
+```
+
 
 ### Environnement variables
 
@@ -55,4 +83,5 @@ An output filed
 | ES_JAVA_OPTS | Set the JVM heap size ``(default: -Xms2g -Xmx2g)`` |
 | ES_MEM_LIMIT | Set the JVM heap size ``(default: 4g)`` |
 | KIBANA_SYSTEM | Kibana system user ``(default: kibana_system)`` |
+| ELASTICSEARCH_USERNAME | ElasticSearch username ``(default: elastic)`` |
 | ELASTICSEARCH_PASSWORD | ElasticSearch user password ``(default: changeme)`` |

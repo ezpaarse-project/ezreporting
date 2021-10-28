@@ -18,6 +18,6 @@ kbn-start:
 start: kbn-start es-start
 
 build:
-	@docker-compose -f docker-compose.yml exec kibana bash -c 'cd plugins/ezreporting/; yarn build --kibana-version ${KIBANA_VERSION}'
+	@docker-compose run --rm -u kbn-dev kibana bash -c 'cd plugins/ezreporting/; yarn build --kibana-version ${KIBANA_VERSION}'
 
 .PHONY: help es-start kbn-init kbn-build kbn-start start

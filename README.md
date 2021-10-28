@@ -25,11 +25,24 @@ $ docker run --rm -it -v $(pwd)/config:/usr/share/kibana/config docker.elastic.c
 # Build Kibana
 $ make kbn-build
 
+# Give permissions to the docker user (kbn-dev)
+$ docker-compose run --rm -u kbn-dev kibana chown kbn-dev -R /home/kbn-dev/kibana/plugins
+
 # Run Kibana
 $ make kbn-start
 ```
 
-Access your Kibana instance through the following url: ``http://localhost:5601/kibana``
+Access your Kibana instance through the following url: ``http://localhost:5603/kibana``
+
+## Build plugin
+
+```bash
+$ make build
+```
+
+A ``.zip`` archive will be generated and will be located in the ``src/build`` folder
+
+An output filed
 
 ### Environnement variables
 

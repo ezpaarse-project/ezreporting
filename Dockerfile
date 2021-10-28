@@ -6,7 +6,7 @@ RUN useradd -rm -d /home/kbn-dev -s /bin/bash -u 8854 kbn-dev \
 
 USER kbn-dev
 
-RUN mkdir /home/kbn-dev/kibana 
+RUN mkdir /home/kbn-dev/kibana
 
 WORKDIR /home/kbn-dev/kibana
 

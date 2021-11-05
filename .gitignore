@@ -2,3 +2,5 @@ src/build
 src/node_modules
 src/target
 config/kibana.keystore
+data
+node_modules

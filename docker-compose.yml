@@ -19,6 +19,8 @@ services:
         soft: -1
         hard: -1
     mem_limit: ${ES_MEM_LIMIT}
+    volumes:
+      - ./data/elasticsearch/data:/usr/share/elasticsearch/data
     networks:
       - elastic
     restart: unless-stopped
@@ -37,9 +39,15 @@ services:
       - KBN_OPTIMIZER_THEMES=v8light
       - KIBANA_VERSION
     volumes:
-      - ./config/kibana.dev.yml:/home/kbn-dev/kibana/config/kibana.dev.yml:ro
-      - ./config/kibana.keystore:/home/kbn-dev/kibana/config/kibana.keystore:ro
+      - ./kibana/kibana.dev.yml:/home/kbn-dev/kibana/config/kibana.dev.yml:ro
       - ./src:/home/kbn-dev/kibana/plugins/ezreporting
+    networks:
+      - elastic
+
+  maildev:
+    image: djfarrelly/maildev
+    ports:
+      - 1080:80
     networks:
       - elastic
 

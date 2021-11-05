@@ -17,18 +17,6 @@ $ source .env
 # Run ElasticSearch
 $ make es-start
 
-# Set kibana_system user password
-$ docker run --rm -it -v $(pwd)/config:/usr/share/kibana/config docker.elastic.co/kibana/kibana:7.14.2 bin/kibana-keystore create
-$ docker run --rm -it -v $(pwd)/config:/usr/share/kibana/config docker.elastic.co/kibana/kibana:7.14.2 bin/kibana-keystore add elasticsearch.password
-
-> Enter value for elasticsearch.password: # enter default password (changeme) or your password if you have changed it
-
-curl -X PUT \
-  -d "{ \"password\": \"${ELASTICSEARCH_PASSWORD}\" }" \
-  -u "${ELASTICSEARCH_USERNAME}:${ELASTICSEARCH_PASSWORD}" \
-  -H 'Content-Type: application/json' \
-  http://localhost:9200/_security/user/kibana_system/_password
-
 # Build Kibana
 $ make kbn-build
 

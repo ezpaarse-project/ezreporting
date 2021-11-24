@@ -21,7 +21,7 @@ import { httpClient, toasts, ms2Str, capabilities } from '../../../lib/reporting
 interface State {
   refreshing: boolean;
   isFlyoutVisible: boolean;
-  taskId: object;
+  taskId: string;
   expandedRows: object;
   historyItems: any[];
   pageIndex: number;
@@ -29,8 +29,8 @@ interface State {
 }
 
 let openFlyOutHandler;
-export function openFlyOut(dashboard, edit): void {
-  openFlyOutHandler(dashboard, edit);
+export function openFlyOut(dashboard): void {
+  openFlyOutHandler(dashboard);
 }
 
 let closeFlyOutHandler;
@@ -45,7 +45,7 @@ export class EzReportingHistoryFlyout extends Component<{}, State> {
     super(props);
 
     this.state = {
-      taskId: {},
+      taskId: '',
       refreshing: false,
       isFlyoutVisible: false,
       historyItems: [],
@@ -115,13 +115,13 @@ export class EzReportingHistoryFlyout extends Component<{}, State> {
   };
 
   refresh = async () => {
-    const { taskId, expandedRows } = this.state;
+    const { expandedRows, taskId } = this.state;
 
     this.setState({ refreshing: true });
 
     let historyItems;
     try {
-      const resp = await httpClient.get(`/api/ezreporting/tasks/${taskId}/history`);
+      const resp = await httpClient.get(`/api/ezreporting/tasks/history/${taskId}`);
       historyItems = resp;
     } catch (e) {
       toasts.addDanger({

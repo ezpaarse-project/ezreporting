@@ -114,7 +114,7 @@
     "ezReporting.removalError": "An error occurred during the removal task.",
     "ezReporting.optimizedForPrinting": "Optimized for printing",
     "ezReporting.dashboardNotFound": "Dashboard not found or removed (id: {DASHBOARD_ID}).",
-    "ezReporting.errorOccured": "An error occurred while loading the data.",
+    "ezReporting.errorOccured": "An error occurred while loading the [{DATA}] data.",
     "ezReporting.noRights": "You have no rights to access this page.",
     "ezReporting.historyError": "An error occurred while loading history.",
     "ezReporting.noHistories": "This task has no history.",

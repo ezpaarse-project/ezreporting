@@ -23,6 +23,8 @@ import {
   EuiPageHeader,
 } from '@elastic/eui';
 
+import io, { Socket } from 'socket.io-client';
+
 import { i18n } from '@kbn/i18n';
 import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/public';
 
@@ -35,14 +37,16 @@ import {
 } from './flyout/edit';
 import { EzReportingHistoryFlyout } from './flyout/history';
 
-import { httpClient, toasts, capabilities } from '../../lib/reporting';
-import { ISelectedSpace } from '../../common/models/edit';
+import { httpClient, toasts, capabilities, auth } from '../../lib/reporting';
+import { ISelectedSpace } from '../models/edit';
 
 interface EzReportingAppDeps {
   basename: string;
   navigation: NavigationPublicPluginStart;
   applicationName: string;
   admin: boolean;
+  security: any;
+  webSocketPort: number;
 }
 
 interface EzReportingAppState {
@@ -57,6 +61,8 @@ interface EzReportingAppState {
   isPopoverOpen: boolean;
   tasksInProgress: object;
   delay: number;
+  auth: object;
+  ws: Socket;
 }
 
 export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingAppState> {
@@ -78,76 +84,124 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
       isPopoverOpen: false,
       tasksInProgress: {},
       delay: 5000,
+      auth,
+      ws: io(`${window.location.hostname}:${props.webSocketPort}`),
     };
   }
 
-  componentDidMount = () => {
-    this.refreshData();
-  };
+  componentDidMount = async () => {
+    await this.refreshData();
 
-  polling = async () => {
-    const { tasks, tasksInProgress } = this.state;
+    const { ws, tasks } = this.state;
 
-    if (tasks.length) {
-      const tmp = JSON.parse(JSON.stringify(tasksInProgress));
+    ws.on('connect', () => {
+      console.log('Socket client connected.');
+    });
+    ws.on('disconnect', () => {
+      console.log('Socket client disconnected.');
+    });
 
-      tasks.forEach(({ id }) => {
-        httpClient.get(`/api/ezreporting/tasks/${id}/history`).then((histories) => {
-          if (histories.length) {
-            const { status, logs, startTime, endTime } = histories.shift();
-
-            if (status !== 'success') {
-              if (new Date(endTime).toISOString() <= new Date().toISOString()) {
-                const log = logs.find(({ type }) => type === 'error');
-                tmp[id] = {
-                  status,
-                  log: log ? log.message : '',
-                  startTime,
-                  endTime,
-                };
-              }
-            }
-          }
-        });
-
-        this.setState({ tasksInProgress: tmp });
-        this.forceUpdate();
-      });
+    const pathName = window.location.pathname;
+    const match = pathName.match(/^\/(kibana|[a-z0-9]+)\/s\/([a-z0-9-+_]+)/i);
+    let space = 'default';
+    if (match) {
+      space = match[2];
     }
+    ws.emit('addInRoom', space);
 
-    return new Promise(() => setTimeout(this.polling, this.state.delay));
+    ws.on('updateTask', (data) => {
+      const index = this.state.tasks.findIndex(({ id }) => id === data.id);
+      if (index > 0 && index <= this.state.tasks.length) {
+        tasks[index] = data.task;
+        this.setState({ tasks });
+      }
+    });
   };
 
-  refreshData = () => {
+  refreshData = async () => {
     const { admin } = this.props;
 
-    httpClient
-      .get(`/api/ezreporting/tasks${admin ? '/management' : ''}`)
-      .then((res) => {
-        this.setState({
-          tasks: res.tasks,
-          dashboards: res.dashboards,
-          frequencies: res.frequencies,
-          spaces: this.props.admin ? res.spaces : [],
-        });
-
-        this.polling();
-      })
-      .catch((err) => {
-        console.log(err);
-        if (err.code === 403) {
+    if (admin) {
+      try {
+        const spaces = await httpClient.get('/api/ezreporting/management/spaces');
+        this.setState({ spaces });
+      } catch (error) {
+        if (error.code === 403) {
           this.setState({ accessDenied: true });
         }
-        return toasts.addDanger({
+        toasts.addDanger({
           title: 'Error',
           text: (
             <FormattedMessage
               id="ezReporting.errorOccured"
-              defaultMessage="An error occurred while loading the data."
+              values={{ DATA: 'spaces' }}
+              defaultMessage="An error occurred while loading the [{DATA}] data."
             />
           ),
         });
+        return Promise.reject(error);
+      }
+    }
+
+    try {
+      const dashboards = await httpClient.get(`/api/ezreporting${admin ? '/management' : ''}/dashboards`);
+      this.setState({ dashboards });
+    } catch (error) {
+      if (error.code === 403) {
+        this.setState({ accessDenied: true });
+      }
+      toasts.addDanger({
+        title: 'Error',
+        text: (
+          <FormattedMessage
+            id="ezReporting.errorOccured"
+            values={{ DATA: 'dashboards' }}
+            defaultMessage="An error occurred while loading the [{DATA}] data."
+          />
+        ),
       });
+      return Promise.reject(error);
+    }
+
+    try {
+      const tasks = await httpClient.get(`/api/ezreporting${admin ? '/management' : ''}/tasks`);
+      this.setState({ tasks });
+    } catch (error) {
+      if (error.code === 403) {
+        this.setState({ accessDenied: true });
+      }
+      toasts.addDanger({
+        title: 'Error',
+        text: (
+          <FormattedMessage
+            id="ezReporting.errorOccured"
+            values={{ DATA: 'tasks' }}
+            defaultMessage="An error occurred while loading the [{DATA}] data."
+          />
+        ),
+      });
+      return Promise.reject(error);
+    }
+
+    try {
+      const frequencies = await httpClient.get(`/api/ezreporting/frequencies`);
+      this.setState({ frequencies });
+    } catch (error) {
+      if (error.code === 403) {
+        this.setState({ accessDenied: true });
+      }
+      toasts.addDanger({
+        title: 'Error',
+        text: (
+          <FormattedMessage
+            id="ezReporting.errorOccured"
+            values={{ DATA: 'frequencies' }}
+            defaultMessage="An error occurred while loading the [{DATA}] data."
+          />
+        ),
+      });
+      return Promise.reject(error);
+    }
   };
 
   editTaskHandler = (task) => {
@@ -157,13 +211,10 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
         frequency: task.reporting.frequency,
         emails: task.reporting.emails,
         print: task.reporting.print,
-        space: task.space,
       });
 
-      return httpClient.patch(`/api/ezreporting/tasks/${task.id}`, { body }).then(() => {
-        const index = this.state.tasks.findIndex(({ id }) => id === task.id);
-
-        this.refreshData();
+      return httpClient.patch(`/api/ezreporting/tasks/${task.id}`, { body }).then(async () => {
+        // await this.refreshData();
 
         toasts.addSuccess({
           title: 'Success',
@@ -176,7 +227,6 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
         });
 
         this.closeEditFlyOut();
-        this.forceUpdate();
       });
     }
   };
@@ -194,11 +244,10 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
         frequency: task.reporting.frequency,
         emails: task.reporting.emails,
         print: task.reporting.print,
-        space: task.space,
       });
 
-      return httpClient.post('/api/ezreporting/tasks', { body }).then((res) => {
-        this.refreshData();
+      return httpClient.post('/api/ezreporting/tasks', { body }).then(async () => {
+        // await this.refreshData();
 
         toasts.addSuccess({
           title: 'Success',
@@ -211,7 +260,6 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
         });
 
         this.closeEditFlyOut();
-        this.forceUpdate();
       });
     }
   };
@@ -264,8 +312,8 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
       selectedItems.forEach(({ id }) => {
         httpClient
           .delete(`/api/ezreporting/tasks/${id}`)
-          .then(() => {
-            this.refreshData();
+          .then(async () => {
+            // await this.refreshData();
 
             toasts.addSuccess({
               title: 'Success',
@@ -369,7 +417,7 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
         <EuiButton
           fill={true}
           iconType="refresh"
-          onClick={() => this.refreshData()}
+          onClick={async () => await this.refreshData()}
         >
           <FormattedMessage id="ezreporting.reloadTasks" defaultMessage="Reload tasks" />
         </EuiButton>

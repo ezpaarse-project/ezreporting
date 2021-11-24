@@ -114,7 +114,7 @@
     "ezReporting.removalError": "Une erreur s'est produite lors de la suppression de la tâche.",
     "ezReporting.optimizedForPrinting": "Optimisé pour l'impression",
     "ezReporting.dashboardNotFound": "Le tableau de bord n'a pas été trouvé ou supprimé (id : {DASHBOARD_ID}).",
-    "ezReporting.errorOccured": "Une erreur s'est produite pendant le chargement des données.",
+    "ezReporting.errorOccured": "Une erreur s'est produite pendant le chargement des données [{DATA}].",
     "ezReporting.noRights": "Vous n'avez pas la permission d'accéder à cette page.",
     "ezReporting.historyError": "Une erreur s'est produite pendant le chargement de l'historique.",
     "ezReporting.noHistories": "Cette tâche de possède pas d'historique.",

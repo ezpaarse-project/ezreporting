@@ -20,6 +20,7 @@ export const defaultTask = (dashboardId): ITask => ({
     createdAt: '',
     print: false,
   },
+  history: {},
   space: '',
 });
 
@@ -61,4 +62,10 @@ export let capabilities: Capabilities;
 
 export function setCapabilities(capa: Capabilities): void {
   capabilities = capa[PLUGIN_ID] || {};
+}
+
+export let auth: object;
+
+export function setAuth(auth: object): void {
+  auth = auth;
 }

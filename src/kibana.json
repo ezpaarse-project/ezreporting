@@ -12,7 +12,7 @@
     "triggersActionsUi",
     "kibanaReact"
   ],
-  "optionalPlugins": ["security"],
+  "optionalPlugins": ["security", "usageCollection"],
   "configPath": [
     "xpack",
     "ezreporting",

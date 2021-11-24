@@ -24,11 +24,11 @@ import { FormattedMessage } from '@kbn/i18n/react';
 import { i18n } from '@kbn/i18n';
 
 import { httpClient, toasts, defaultTask, capabilities } from '../../../lib/reporting';
-import { IEditProps, IEditState, ISelectedDashboard, ISelectedSpace } from '../../../common/models/edit';
-import { IDashboard } from '../../../common/models/dashboard';
-import { ITask } from '../../../common/models/task';
-import { IFrequency } from '../../../common/models/frequency';
-import { ISpace } from '../../../common/models/space';
+import { IEditProps, IEditState, ISelectedDashboard, ISelectedSpace } from '../../models/edit';
+import { IDashboard } from '../../models/dashboard';
+import { ITask } from '../../models/task';
+import { IFrequency } from '../../models/frequency';
+import { ISpace } from '../../models/space';
 
 let openFlyOutHandler;
 export function openFlyOut(task, edit): void {
@@ -167,7 +167,7 @@ export class EzReportingTaskEditFlyout extends Component<IEditProps, IEditState>
     for (let i = 0; i < emailsList.length; i += 1) {
       try {
         const body = JSON.stringify({ email: emailsList[i] });
-        await httpClient.post('/api/ezreporting/email', { body });
+        await httpClient.post('/api/ezreporting/tasks/email', { body });
 
         const exists = receivers.includes(emailsList[i]);
         if (!exists) {

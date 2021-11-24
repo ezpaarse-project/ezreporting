@@ -2,7 +2,6 @@ elasticsearch.hosts:
   - http://elastic:9200
 server.rewriteBasePath: false
 server.host: 0.0.0.0
-server.basePath: /kibana
 xpack.security.enabled: true
 xpack.reporting.roles.enabled: false
 xpack.reporting.capture.browser.chromium.disableSandbox: true

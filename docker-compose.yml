@@ -28,13 +28,17 @@ services:
   kibana:
     build:
       context: ./
+      args:
+        - WEB_SOCKET_PORT=${WEB_SOCKET_PORT:-3000}
     ports:
       - 5601:5601
       - 5603:5603
+      - ${WEB_SOCKET_PORT:-3000}:3000
     environment:
       - http_proxy
       - https_proxy
       - ELASTICSEARCH_USERNAME=${KIBANA_SYSTEM}
+      - SERVER_BASEPATH=${KIBANA_SERVER_BASEPATH:-/kibana}
       - ELASTICSEARCH_PASSWORD
       - KBN_OPTIMIZER_THEMES=v8light
       - KIBANA_VERSION

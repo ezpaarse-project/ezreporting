@@ -8,10 +8,10 @@ import {
 import { EzReportingPluginSetup, EzReportingPluginStart } from './types';
 import { HomePublicPluginSetup, FeatureCatalogueCategory } from '../../../src/plugins/home/public';
 import { ManagementSetup } from '../../../src/plugins/management/public';
+import { SecurityPluginSetup } from '../../../security/public';
 import {
   PLUGIN_NAME,
   PLUGIN_DESCRIPTION,
-  PLUGIN_APP_NAME,
   PLUGIN_ID,
   PLUGIN_ICON,
   CATEGORY,
@@ -21,10 +21,12 @@ import logo from './images/logo.png';
 interface SetupDeps {
   management: ManagementSetup;
   home?: HomePublicPluginSetup;
+  security?: SecurityPluginSetup;
 }
 
 interface ClientConfigType {
   applicationName: string;
+  webSocketPort: number;
 }
 
 export class EzReportingPlugin implements Plugin<EzReportingPluginSetup, EzReportingPluginStart> {
@@ -37,6 +39,7 @@ export class EzReportingPlugin implements Plugin<EzReportingPluginSetup, EzRepor
   public setup(core: CoreSetup, { home, management }: SetupDeps): EzReportingPluginSetup {
     const config: ClientConfigType = this.initializerContext.config.get<ClientConfigType>();
     const applicationName: string = config.applicationName;
+    const webSocketPort: number = config.webSocketPort;
 
     CATEGORY.label = applicationName;
     CATEGORY.euiIconType = logo;
@@ -76,6 +79,7 @@ export class EzReportingPlugin implements Plugin<EzReportingPluginSetup, EzRepor
           params,
           applicationName,
           admin,
+          webSocketPort,
         });
 
         // Render the application
@@ -89,7 +93,6 @@ export class EzReportingPlugin implements Plugin<EzReportingPluginSetup, EzRepor
     // Menagement section
     if (management) {
       const managementSection: string = `${applicationName.toLowerCase()}`;
-      console.log(managementSection);
       const appManagementSection = management.sections.register({
         id: managementSection,
         title: applicationName,
@@ -113,7 +116,7 @@ export class EzReportingPlugin implements Plugin<EzReportingPluginSetup, EzRepor
               text: 'Stack Management',
               href: coreStart.http.basePath.prepend('/app/management'),
             },
-            { text: PLUGIN_APP_NAME },
+            { text: applicationName },
             { text: PLUGIN_NAME },
           ]);
 
@@ -125,6 +128,7 @@ export class EzReportingPlugin implements Plugin<EzReportingPluginSetup, EzRepor
             params,
             applicationName,
             admin,
+            webSocketPort,
           });
 
           // Render the application

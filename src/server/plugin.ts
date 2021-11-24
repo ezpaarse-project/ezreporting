@@ -5,49 +5,98 @@ import {
   Plugin,
   Logger,
 } from '../../../src/core/server';
+import { SecurityPluginSetup, SecurityPluginStart } from '../../../../security/server';
 
 import { EzReportingPluginSetup, EzReportingPluginStart } from './types';
-import { defineRoutes } from './routes';
+import { dashboardsRouter } from './routes/dashboards';
+import { frequenciesRouter } from './routes/frequencies';
+import { spacesRouter } from './routes/spaces';
+import { tasksRouter } from './routes/tasks';
+
 import { PluginSetupContract as FeaturesPluginSetup } from '../../../x-pack/plugins/features/server';
 
-import { PLUGIN_NAME, PLUGIN_ID, PLUGIN_ICON, PLUGIN_APP_NAME, PLUGIN_DESCRIPTION } from '../common';
+import { PLUGIN_NAME, PLUGIN_ID, PLUGIN_DESCRIPTION } from '../common';
+import { IServerConfig } from '../common/config';
+import { getEsClient } from './lib/elastic';
+import { createIndices } from './lib/createIndices';
+import { getLogger } from './lib/logger';
+import { getConfig, setConfig } from './lib/config';
+import { getSecurity } from './lib/security';
+
+import { reportingTemplate } from "./templates/reporting-template";
+import { historyTemplate } from "./templates/history-template";
+import { activityTemplate } from "./templates/activity-template";
+import { createRoles } from './lib/createRoles';
+import { socket } from './ws';
+
+import { CronJob } from 'cron';
 
 export interface EzReportingDeps {
   features: FeaturesPluginSetup;
+  security?: SecurityPluginSetup;
 }
 
-interface ServerConfigType {
-  applicationName: string;
-}
-
-export enum AlertType {
-  ErrorCount = 'ezreporting.error_rate', // ErrorRate was renamed to ErrorCount but the key is kept as `error_rate` for backwards-compat.
-  TransactionErrorRate = 'ezreporting.transaction_error_rate',
-  TransactionDuration = 'ezreporting.transaction_duration',
-  TransactionDurationAnomaly = 'ezreporting.transaction_duration_anomaly',
+export interface EzReportingStart {
+  security?: SecurityPluginStart;
 }
 
 export class EzreportingPlugin
   implements Plugin<EzReportingPluginSetup, EzReportingPluginStart, EzReportingDeps> {
   private readonly logger: Logger;
+  private config;
 
-  initializerContext: PluginInitializerContext<ServerConfigType>;
+  initializerContext: PluginInitializerContext<IServerConfig>;
 
   constructor(initializerContext: PluginInitializerContext) {
     this.logger = initializerContext.logger.get();
     this.initializerContext = initializerContext;
+    this.config = this.initializerContext.config.get();
+  
+    setConfig(this.config);
+    getLogger(this.logger);
+    getEsClient({
+      node: this.config.elastic.baseUrl,
+      auth: {
+        username: this.config.elastic.username,
+        password: this.config.elastic.password,
+      }
+    });
   }
 
-  public async setup(core: CoreSetup, { features }: EzReportingDeps) {
+  public async setup(core: CoreSetup<EzReportingStart>, { features, security }: EzReportingDeps) {
     this.logger.debug(`${PLUGIN_ID}: Setup`);
 
     const router = core.http.createRouter();
 
-    // Register server side APIs
-    const { auth } = core.http;
-    defineRoutes(router, auth, this.logger);
+    getSecurity(security);
 
-    const applicationName = process.env.EZMESURE_APPLICATION_NAME || PLUGIN_APP_NAME;
+    // Create ezreporting indices
+    await createIndices({
+      [this.config.index]: reportingTemplate,
+      [this.config.historyIndex]: historyTemplate,
+      [this.config.activityIndex]: activityTemplate,
+    });
+
+    // Create ezreporting indices
+    await createRoles();
+
+    // Create websocket server
+    socket.createServer();
+    socket.on();
+
+    // Register server side APIs
+    dashboardsRouter(router);
+    frequenciesRouter(router);
+    spacesRouter(router);
+    tasksRouter(router);
+
+    const job = new CronJob(this.config.cron, () => {
+      const { generatePendingReports } = require('./lib/services/reporting');
+      generatePendingReports();
+    });
+    job.start();
+
+    const applicationName = this.config.applicationName;
 
     const featuresCategory = {
       id: `${applicationName.toLowerCase()}`,
@@ -59,7 +108,7 @@ export class EzreportingPlugin
 
     features.registerKibanaFeature({
       id: PLUGIN_ID,
-      name: `${PLUGIN_NAME} ${PLUGIN_APP_NAME}`,
+      name: `${PLUGIN_NAME} ${applicationName}`,
       category: featuresCategory,
       app: [PLUGIN_ID, 'kibana'],
       catalogue: [PLUGIN_ID],
@@ -70,7 +119,7 @@ export class EzreportingPlugin
       privileges: {
         all: {
           app: [PLUGIN_ID, 'kibana'],
-          api: [`${PLUGIN_ID}-read`, `${PLUGIN_ID}-all`],
+          api: [`${PLUGIN_ID}-all`],
           catalogue: [PLUGIN_ID],
           management: {
             ezmesure: [`${PLUGIN_ID}_management`],

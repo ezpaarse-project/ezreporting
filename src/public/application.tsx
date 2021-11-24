@@ -13,12 +13,13 @@ import {
   setCapabilities,
 } from '../lib/reporting';
 
-const renderApp = (
+const renderApp = async (
   { application, notifications, http }: CoreStart,
-  { navigation }: AppPluginStartDependencies,
+  { navigation, security }: AppPluginStartDependencies,
   { element }: AppMountParameters,
   applicationName: string,
-  admin: boolean
+  admin: boolean,
+  webSocketPort: number,
 ): UnmountCallback => {
   if (!httpClient) {
     setHttpClient(http);
@@ -36,6 +37,8 @@ const renderApp = (
       navigation={navigation}
       applicationName={applicationName}
       admin={admin}
+      security={security}
+      webSocketPort={webSocketPort}
     />,
     element
   );
@@ -49,12 +52,14 @@ export async function mountApp({
   params,
   applicationName,
   admin,
+  webSocketPort,
 }: {
   coreStart: CoreStart,
   depsStart: AppPluginStartDependencies,
   params: AppMountParameters,
   applicationName: string,
   admin: boolean,
+  webSocketPort: number,
 }): Promise<UnmountCallback> {
-  return renderApp(coreStart, depsStart, params, applicationName, admin);
+  return renderApp(coreStart, depsStart, params, applicationName, admin, webSocketPort);
 }

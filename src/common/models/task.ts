@@ -2,6 +2,7 @@ export interface ITask {
   id: string;
   dashboardId: string | null;
   exists: boolean;
+  space: string;
   reporting: {
     frequency: string;
     emails: Array<string>;
@@ -10,5 +11,5 @@ export interface ITask {
     runAt?: string;
     print: boolean;
   },
-  space: string;
+  history: object | null;
 }

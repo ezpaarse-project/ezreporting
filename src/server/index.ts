@@ -1,19 +1,11 @@
-import { schema, TypeOf } from '@kbn/config-schema';
 import { PluginInitializerContext, PluginConfigDescriptor } from '../../../src/core/server';
 import { EzreportingPlugin } from './plugin';
-import { PLUGIN_APP_NAME } from '../common';
+import { ConfigSchema, configSchema } from '../common/config';
 
-const configSchema = schema.object({
-  applicationName: schema.string({
-    defaultValue: process.env.EZMESURE_APPLICATION_NAME || PLUGIN_APP_NAME,
-  }),
-});
-
-type ConfigType = TypeOf<typeof configSchema>;
-
-export const config: PluginConfigDescriptor<ConfigType> = {
+export const config: PluginConfigDescriptor<ConfigSchema> = {
   exposeToBrowser: {
     applicationName: true,
+    webSocketPort: true,
   },
   schema: configSchema,
 };

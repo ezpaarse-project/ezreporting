@@ -202,6 +202,7 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
         frequency: task.reporting.frequency,
         emails: task.reporting.emails,
         print: task.reporting.print,
+        enabled: task.reporting.enabled,
       });
 
       return httpClient.patch(`/api/ezreporting/tasks/${task.id}`, { body }).then(({ data }) => {
@@ -240,6 +241,7 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
         frequency: task.reporting.frequency,
         emails: task.reporting.emails,
         print: task.reporting.print,
+        enabled: task.reporting.enabled,
       });
 
       return httpClient.post('/api/ezreporting/tasks', { body }).then(({ data }) => {
@@ -304,7 +306,6 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
             this.setState({ tasks: tmp });
           }
         }).catch((err) => {
-          console.log('ERROR');
           console.log(err);
           toasts.addDanger({
             title: 'Error',

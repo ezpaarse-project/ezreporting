@@ -61,6 +61,7 @@ export class EzReportingTaskEditFlyout extends Component<IEditProps, IEditState>
           sentAt: '',
           runAt: '',
           print: false,
+          enabled: true,
         },
         space: '',
       },
@@ -154,6 +155,12 @@ export class EzReportingTaskEditFlyout extends Component<IEditProps, IEditState>
   onChangeLayout = (event: { target: { checked: boolean; } }): void => {
     const currentTask: ITask = { ...this.state.currentTask };
     currentTask.reporting.print = event.target.checked;
+    this.setState({ currentTask });
+  };
+
+  onChangeEnabled = (event: { target: { checked: boolean; } }): void => {
+    const currentTask: ITask = { ...this.state.currentTask };
+    currentTask.reporting.enabled = event.target.checked;
     this.setState({ currentTask });
   };
 
@@ -482,6 +489,20 @@ export class EzReportingTaskEditFlyout extends Component<IEditProps, IEditState>
               />
             }
             onChange={this.onChangeLayout}
+          />
+        </EuiFormRow>
+        
+        <EuiFormRow fullWidth={true}>
+          <EuiCheckbox
+            id="enable-reporting"
+            checked={currentTask.reporting.enabled}
+            label={
+              <FormattedMessage
+                id="ezReporting.enableAutoSending"
+                defaultMessage="Enable automatic sending"
+              />
+            }
+            onChange={this.onChangeEnabled}
           />
         </EuiFormRow>
 

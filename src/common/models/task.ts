@@ -10,6 +10,7 @@ export interface ITask {
     sentAt?: string;
     runAt?: string;
     print: boolean;
+    enabled: boolean;
   },
   history: object | null;
 }

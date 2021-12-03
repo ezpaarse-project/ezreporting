@@ -12,7 +12,6 @@ import {
   EuiToolTip,
   EuiLoadingSpinner,
   EuiBadge,
-  EuiButton,
 } from '@elastic/eui';
 import moment from 'moment';
 
@@ -301,6 +300,18 @@ export class EzReportingTable extends Component<ITableProps, ITableState> {
             </EuiTextColor>
           );
         },
+      },{
+        field: 'reporting.enabled',
+        width: '140px',
+        name: i18n.translate('ezReporting.enabled', { defaultMessage: 'Enabled' }),
+        description: i18n.translate('ezReporting.enabled', { defaultMessage: 'Enabled' }),
+        render: (enabled: boolean): string => {
+          if (enabled) {
+            return (<EuiIcon type="check" />);
+          }
+        },
+        sortable: true,
+        align: 'center',
       },
       {
         field: 'reporting.frequency',

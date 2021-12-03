@@ -29,6 +29,9 @@ export const reportingTemplate = {
       print: {
         type: 'boolean',
       },
+      enabled: {
+        type: 'boolean',
+      },
       image: {
         type: 'boolean',
       },

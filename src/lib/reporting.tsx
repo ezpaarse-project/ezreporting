@@ -19,6 +19,7 @@ export const defaultTask = (dashboardId): ITask => ({
     emails: [],
     createdAt: '',
     print: false,
+    enabled: true,
   },
   history: {},
   space: '',

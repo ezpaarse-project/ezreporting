@@ -47,6 +47,7 @@ export function tasksRouter(router: IRouter) {
           frequency: schema.string(),
           emails: schema.arrayOf(schema.string()),
           print: schema.boolean(),
+          enabled: schema.boolean(),
         }),
       },
       options: {
@@ -69,6 +70,7 @@ export function tasksRouter(router: IRouter) {
           frequency: schema.string(),
           emails: schema.arrayOf(schema.string()),
           print: schema.boolean(),
+          enabled: schema.boolean(),
         }),
       },
       options: {

@@ -22,6 +22,15 @@ async function getTasks() {
     size: 10000,
     body: {
       query: {
+        bool: {
+          filter: [
+            {
+              term: {
+                enabled: true,
+              },
+            },
+          ],
+        },
         range: {
           runAt: {
             lte: new Date(),

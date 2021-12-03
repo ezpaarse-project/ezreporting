@@ -89,6 +89,7 @@ async function getTasks(spaceName?: string) {
       runAt,
       print,
       space,
+      enabled,
     } = get(tasksList[i], '_source');
 
     let history;
@@ -138,6 +139,7 @@ async function getTasks(spaceName?: string) {
         sentAt,
         runAt,
         print,
+        enabled,
       },
       history,
     });
@@ -169,6 +171,7 @@ async function getTaskById(id: number, historySize: number = 1000) {
     sentAt,
     runAt,
     print,
+    enabled,
     space,
   } = task;
 
@@ -185,6 +188,7 @@ async function getTaskById(id: number, historySize: number = 1000) {
       sentAt,
       runAt,
       print,
+      enabled,
     },
     history: history?.[0],
   };

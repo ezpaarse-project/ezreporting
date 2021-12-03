@@ -16,6 +16,9 @@
     "date-fns": "^2.25.0",
     "fs-extra": "^10.0.0",
     "lodash.get": "^4.4.2",
+    "mjml": "^4.11.0",
+    "nodemailer": "^6.7.2",
+    "nunjucks": "^3.2.3",
     "puppeteer": "^11.0.0",
     "rison": "^0.1.1",
     "socket.io": "^4.4.0",
@@ -26,6 +29,9 @@
     "@types/cron": "^1.7.3",
     "@types/date-fns": "^2.6.0",
     "@types/lodash.get": "^4.4.6",
+    "@types/mjml": "^4.7.0",
+    "@types/nodemailer": "^6.4.4",
+    "@types/nunjucks": "^3.2.0",
     "@types/rison": "^0.0.7"
   }
 }

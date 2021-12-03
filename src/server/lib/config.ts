@@ -1,3 +1,4 @@
+import get from 'lodash.get';
 import { IServerConfig } from "../../common/config";
 
 export let config: IServerConfig;
@@ -8,6 +9,6 @@ export function setConfig(internalConfig: IServerConfig) {
   return config;
 }
 
-export function getConfig(): IServerConfig {
-  return config;
+export function getConfig(data: string) {
+  return get(config, data);
 }

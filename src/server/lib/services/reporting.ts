@@ -1,21 +1,20 @@
 import formatDate from 'date-fns/format';
-import { fr } from 'date-fns/locale';
+import { en } from 'date-fns/locale';
 import { getConfig } from '../config';
 import { logger } from '../../lib/logger';
 import { client } from '../../lib/elastic';
 import { getDashboard } from './dashboard';
 import Frequency from './frequency';
 import reporter from './puppeteer';
-// const { sendMail, generateMail } = require('./mail');
+import { generateMail, sendMail } from '../mail';
+import { socket } from '../../ws';
 
-const {
-  index,
-  historyIndex,
-  kibana,
-  sender,
-  email,
-  frequencies,
-} = getConfig();
+const index = getConfig('index');
+const historyIndex = getConfig('historyIndex');
+const kibana = getConfig('kibana');
+const sender = getConfig('sender');
+const email = getConfig('email');
+const frequencies = getConfig('frequencies');
 
 async function getTasks() {
   const res = await client.search({
@@ -92,6 +91,7 @@ class HistoryEntry {
       const result = await client.index({
         id: this.id,
         index: historyIndex,
+        refresh: true,
         body: this.history,
       });
 
@@ -115,13 +115,14 @@ export async function generateReport(task) {
   const { _id: taskId, _source: taskSource } = task;
 
   const history = new HistoryEntry(taskId);
-  const fullDashboardId = `${taskSource.space || 'default'}:${taskSource.dashboardId}`;
+  const fullDashboardId = `${taskSource.space}:${taskSource.dashboardId}`;
   let dashboard;
 
   history.log('info', `fetching dashboard data (id: ${fullDashboardId})`);
 
   // eslint-disable-next-line no-await-in-loop
   await history.save();
+  socket.getIo().to(taskSource.space).emit('updateHistory', taskId);
 
   try {
     // eslint-disable-next-line no-await-in-loop
@@ -130,9 +131,10 @@ export async function generateReport(task) {
     history.setStatus('error');
     history.log('error', `dashboard (id: ${fullDashboardId}) not found or removed`);
     logger.error(e);
-
+    
     // eslint-disable-next-line no-await-in-loop
     await history.end().save();
+    socket.getIo().to(taskSource.space).emit('updateHistory', taskId);
     return;
   }
 
@@ -144,11 +146,11 @@ export async function generateReport(task) {
     // eslint-disable-next-line no-await-in-loop
     pdf = await new Promise((resolve, reject) => {
       reporter.addTask(taskSource)
-        .on('start', () => {
+        .on('start', async () => {
           history.startTimer();
           history.setStatus('ongoing');
           history.log('info', 'task has been started');
-          history.save();
+          history.save().then(() => socket.getIo().to(taskSource.space).emit('updateHistory', taskId));
         })
         .on('complete', resolve)
         .on('error', reject);
@@ -160,6 +162,7 @@ export async function generateReport(task) {
 
     // eslint-disable-next-line no-await-in-loop
     await history.end().save();
+    socket.getIo().to(taskSource.space).emit('updateHistory', taskId);
     return;
   }
 
@@ -182,28 +185,34 @@ export async function generateReport(task) {
   for (let i = 0; i < email.attempts; i += 1) {
     try {
       // eslint-disable-next-line no-await-in-loop
-      // await sendMail({
-      //   from: sender,
-      //   to: receivers.join(','),
-      //   subject: `Reporting ezMESURE [${taskSource.print ? 'OI - ' : ''}${formatDate(now, 'dd/MM/yyyy')}] - ${dashboardTitle}`,
-      //   attachments: [
-      //     {
-      //       contentType: 'application/pdf',
-      //       filename: `reporting_ezMESURE_${taskSource.dashboardId}_${formatDate(now, 'dd-MM-yyyy')}.pdf`,
-      //       content: pdf,
-      //       cid: task.dashboardId,
-      //     },
-      //   ],
-      //   ...generateMail('reporting', {
-      //     reportingDate: formatDate(now, 'PPPP', { locale: fr }),
-      //     title: dashboardTitle,
-      //     frequency: frequencyText,
-      //     dashboardUrl,
-      //     optimizedForPrinting: taskSource.print,
-      //   }),
-      // });
+      await sendMail({
+        from: sender,
+        to: receivers.join(','),
+        subject: `Reporting ${getConfig('applicationName')} [${taskSource.print ? 'OI - ' : ''}${formatDate(now, 'dd/MM/yyyy')}] - ${dashboardTitle}`,
+        attachments: [
+          {
+            contentType: 'application/pdf',
+            filename: `reporting_${getConfig('applicationName').toLowerCase()}_${taskSource.dashboardId}_${formatDate(now, 'dd-MM-yyyy')}.pdf`,
+            content: pdf,
+            cid: task.dashboardId,
+          },
+        ],
+        ...generateMail('reporting', {
+          applicationName: getConfig('applicationName'),
+          template: getConfig('email.template'),
+          contact: getConfig('contact'),
+          appUrl: getConfig('appUrl'),
+          network: getConfig('network'),
+          reportingDate: formatDate(now, 'PPPP', { locale: en }),
+          title: dashboardTitle,
+          frequency: frequencyText,
+          dashboardUrl,
+          optimizedForPrinting: taskSource.print,
+        }),
+      });
       emailSent = true;
       history.log('info', 'the email was sent');
+  
       break;
     } catch (e) {
       history.log('warn', `failed to send email (attempts: ${(i + 1)})`);
@@ -245,9 +254,9 @@ export async function generateReport(task) {
     history.log('error', `Failed to update task data in index (${index})`);
     logger.error(e);
   }
-
   // eslint-disable-next-line no-await-in-loop
   await history.end().save();
+  socket.getIo().to(taskSource.space).emit('updateHistory', taskId);
 }
 
 export async function generatePendingReports() {

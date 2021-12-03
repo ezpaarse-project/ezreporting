@@ -42,6 +42,10 @@ services:
       - ELASTICSEARCH_PASSWORD
       - KBN_OPTIMIZER_THEMES=v8light
       - KIBANA_VERSION
+      - SMTP_HOST=maildev
+      - SMTP_SECURE=${SMTP_SECURE:-false}
+      - SMTP_IGNORE_TLS=${SMTP_IGNORE_TLS:-true}
+      - SMTP_REJECT_UNAUTHORIZED=${SMTP_REJECT_UNAUTHORIZED:-false}
     volumes:
       - ./kibana/kibana.dev.yml:/home/kbn-dev/kibana/config/kibana.dev.yml:ro
       - ./src:/home/kbn-dev/kibana/plugins/ezreporting

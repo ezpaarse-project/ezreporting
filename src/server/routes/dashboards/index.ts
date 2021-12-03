@@ -12,7 +12,7 @@ export function dashboardsRouter(router: IRouter) {
         tags: [`access:${PLUGIN_ID}-all`],
       },
     },
-    getAll(),
+    getAll,
   );
 
   router.get(
@@ -24,6 +24,6 @@ export function dashboardsRouter(router: IRouter) {
         tags: [`access:${PLUGIN_ID}-read`],
       },
     },
-    getBySpace(),
+    getBySpace,
   );
 }

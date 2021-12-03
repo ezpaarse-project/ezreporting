@@ -1,4 +1,4 @@
-// import { RequestHandlerContext } from 'kibana/server';
+import { RequestHandlerContext } from 'kibana/server';
 import { Client } from '@elastic/elasticsearch';
 import { ApiKeyAuth, BasicAuth } from '@elastic/elasticsearch/lib/pool';
 

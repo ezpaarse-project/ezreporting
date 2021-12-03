@@ -121,8 +121,8 @@ export class EzReportingHistoryFlyout extends Component<{}, State> {
 
     let historyItems;
     try {
-      const resp = await httpClient.get(`/api/ezreporting/tasks/history/${taskId}`);
-      historyItems = resp;
+      const { data } = await httpClient.get(`/api/ezreporting/tasks/history/${taskId}`);
+      historyItems = data.history;
     } catch (e) {
       toasts.addDanger({
         title: 'Error',

@@ -14,7 +14,7 @@ export const socket = {
       res.setHeader('Access-Control-Allow-Origin', '*');
       return res.end(JSON.stringify({ service: 'ws' }));
     });
-    httpServer.listen(getConfig().webSocketPort);
+    httpServer.listen(getConfig('webSocketPort'));
   
     io = new Server(httpServer, {
       cors: { origin: '*' },

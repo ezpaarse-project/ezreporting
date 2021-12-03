@@ -1,0 +1,36 @@
+{% extends "layout.mjml" %}
+
+{% block title %}
+<mj-title>Report {{ applicationName }} of {{ reportingDate }}.</mj-title>
+{% endblock %}
+
+{% block content %}
+
+<mj-section>
+  <mj-column>
+    <mj-text>
+      <p>Hello,</p>
+      <p>
+        In this email you will find the <strong>{{ frequency }}</strong> {{ "optimized for printing" if optimizedForPrinting }}
+        from the <strong>{{ title }}</strong> dashboard, generated on <strong>{{ reportingDate }}</strong>.
+      </p>
+      <p>
+        This message is sent automatically by the {{ applicationName }} application,
+        you receive it because you are part of a report mailing list.
+      </p>
+    </mj-text>
+
+    <mj-text align="center" color="#55575d" font-size="24px" line-height="22px" padding="10px 25px">
+      <p>- Find your report in attachment -</p>
+    </mj-text>
+
+    <mj-text>
+      <p>
+        This dashboard can be viewed online at <a href="{{ dashboardUrl }}" target="_blank">this address</a>,
+        subject to sufficient access rights.
+      </p>
+    </mj-text>
+  </mj-column>
+</mj-section>
+
+{% endblock %}

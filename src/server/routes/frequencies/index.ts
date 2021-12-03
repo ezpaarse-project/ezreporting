@@ -12,6 +12,6 @@ export function frequenciesRouter(router: IRouter) {
         tags: [`access:${PLUGIN_ID}-read`],
       },
     },
-    getFrequencies(),
+    getFrequencies,
   );
 }

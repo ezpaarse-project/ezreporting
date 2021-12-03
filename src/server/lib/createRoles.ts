@@ -3,7 +3,8 @@ import { logger } from '../lib/logger';
 import { getConfig } from './config';
 
 function createRole(name, privileges) {
-  const { index, historyIndex } = getConfig();
+  const index = getConfig('index');
+  const historyIndex = getConfig('historyIndex');
 
   return client.security.putRole({
     name,
@@ -20,7 +21,7 @@ function createRole(name, privileges) {
 }
 
 export async function createRoles() {
-  const { roleName } = getConfig();
+  const roleName = getConfig('roleName');
 
   try {
     await client.security.getRole({ name: roleName });

@@ -1,0 +1,8 @@
+Hello,
+In this email you will find the {{ frequency }} {{ "optimized for printing" if optimizedForPrinting }} from the {{ title }} dashboard, generated on {{ reportingDate }}.
+
+This message is sent automatically by the {{ applicationName }} application, you receive it because you are part of a report mailing list.
+
+Find your report in attachment.
+
+This dashboard can be viewed online at {{ dashboardUrl }}, subject to sufficient access rights.

@@ -23,7 +23,7 @@ export function tasksRouter(router: IRouter) {
         tags: [`access:${PLUGIN_ID}-read` , `access:${PLUGIN_ID}-all`],
       },
     },
-    getBySpace(),
+    getBySpace,
   );
 
   router.get(
@@ -35,7 +35,7 @@ export function tasksRouter(router: IRouter) {
         tags: [`access:${PLUGIN_ID}-all`],
       },
     },
-    getAll(),
+    getAll,
   );
 
   router.post(
@@ -54,7 +54,7 @@ export function tasksRouter(router: IRouter) {
         tags: [`access:${PLUGIN_ID}-all`],
       },
     },
-    store(),
+    store,
   );
 
   router.patch(
@@ -76,7 +76,7 @@ export function tasksRouter(router: IRouter) {
         tags: [`access:${PLUGIN_ID}-all`],
       },
     },
-    update(),
+    update,
   );
 
   router.delete(
@@ -92,7 +92,7 @@ export function tasksRouter(router: IRouter) {
         tags: [`access:${PLUGIN_ID}-all`],
       },
     },
-    deleteTask(),
+    deleteTask,
   );
 
   router.get(
@@ -108,7 +108,7 @@ export function tasksRouter(router: IRouter) {
         tags: [`access:${PLUGIN_ID}-all`],
       },
     },
-    history(),
+    history,
   );
 
   router.get(
@@ -124,7 +124,7 @@ export function tasksRouter(router: IRouter) {
         tags: [`access:${PLUGIN_ID}-all`],
       },
     },
-    download(),
+    download,
   );
 
   router.post(
@@ -143,7 +143,7 @@ export function tasksRouter(router: IRouter) {
         },
       },
     },
-    validEmail(),
+    validEmail,
   );
 
 }

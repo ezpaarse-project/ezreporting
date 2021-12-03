@@ -64,29 +64,33 @@ async function getDashboards(space?: string) {
   return dashboards;
 }
 
-export function getAll() {
-  return async function (context: RequestHandlerContext, req: KibanaRequest, res: KibanaResponseFactory) {
-    const isAdmin = isSuperuser({ security, req });
-    if (!isAdmin) { return res.forbidden(); }
+export async function getAll(context: RequestHandlerContext, req: KibanaRequest, res: KibanaResponseFactory) {
+  const isAdmin = isSuperuser({ security, req });
+  if (!isAdmin) { return res.forbidden(); }
 
-    logger.info('Get all dashboards');
-    const dashboards = await getDashboards();
+  logger.info('Get all dashboards');
+  const dashboards = await getDashboards();
 
-    return res.ok({
-      body: dashboards,
-    });
-  };
-}
+  return res.ok({
+    body: {
+      statusCode: 200,
+      message: null,
+      data: { dashboards },
+    },
+  });
+};
 
-export function getBySpace() {
-  return async function (context: RequestHandlerContext, req: KibanaRequest, res: KibanaResponseFactory) {
-    const { spaceId } = context.core?.savedObjects?.client;
+export async function getBySpace(context: RequestHandlerContext, req: KibanaRequest, res: KibanaResponseFactory) {
+  const { spaceId } = context.core?.savedObjects?.client;
 
-    logger.info('Get all dashboards');
-    const dashboards = await getDashboards(spaceId);
+  logger.info('Get all dashboards');
+  const dashboards = await getDashboards(spaceId);
 
-    return res.ok({
-      body: dashboards,
-    });
-  };
-}
+  return res.ok({
+    body: {
+      statusCode: 200,
+      message: null,
+      data: { dashboards },
+    },
+  });
+};

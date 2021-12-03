@@ -12,6 +12,6 @@ export function spacesRouter(router: IRouter) {
         tags: [`access:${PLUGIN_ID}-all`],
       },
     },
-    getSpaces(),
+    getSpaces,
   );
 }

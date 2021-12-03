@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, createRef } from 'react';
 import { i18n } from '@kbn/i18n';
 import { FormattedMessage } from '@kbn/i18n/react';
 import {
@@ -12,6 +12,7 @@ import {
   EuiToolTip,
   EuiLoadingSpinner,
   EuiBadge,
+  EuiButton,
 } from '@elastic/eui';
 import moment from 'moment';
 
@@ -37,6 +38,7 @@ export class EzReportingTable extends Component<ITableProps, ITableState> {
       pageSize: 10,
       sortField: props.admin ? 'space' : 'dashboardId',
       sortDirection: 'asc',
+      tableRef: createRef(),
     };
   }
 
@@ -102,8 +104,20 @@ export class EzReportingTable extends Component<ITableProps, ITableState> {
     });
   };
 
+  clearSelection = () => {
+    this.state.tableRef.current.setSelection([]);
+  };
+
   render(): string {
-    const { pageIndex, pageSize, itemIdToExpandedRowMap, sortField, sortDirection, } = this.state;
+    const {
+      pageIndex,
+      pageSize,
+      itemIdToExpandedRowMap,
+      sortField,
+      sortDirection, 
+      tableRef,
+    } = this.state;
+
     const {
       tasks,
       spaces,
@@ -404,19 +418,22 @@ export class EzReportingTable extends Component<ITableProps, ITableState> {
     });
 
     return (
-      <EuiBasicTable
-        items={items}
-        itemId="id"
-        itemIdToExpandedRowMap={itemIdToExpandedRowMap}
-        isExpandable={true}
-        hasActions={true}
-        columns={columns}
-        pagination={pagination}
-        sorting={sorting}
-        isSelectable={true}
-        selection={selection}
-        onChange={this.onTableChange}
-      />
+      <Fragment>
+        <EuiBasicTable
+          items={items}
+          itemId="id"
+          ref={tableRef}
+          itemIdToExpandedRowMap={itemIdToExpandedRowMap}
+          isExpandable={true}
+          hasActions={true}
+          columns={columns}
+          pagination={pagination}
+          sorting={sorting}
+          isSelectable={true}
+          selection={selection}
+          onChange={this.onTableChange}
+        />
+       </Fragment>
     );
   }
 }

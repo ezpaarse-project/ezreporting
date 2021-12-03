@@ -18,4 +18,5 @@ export interface ITableState {
   pageSize: number;
   sortField: string;
   sortDirection: string;
+  tableRef: any;
 }

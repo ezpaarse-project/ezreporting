@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, createRef } from 'react';
 import { FormattedMessage, I18nProvider } from '@kbn/i18n/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 
@@ -63,6 +63,7 @@ interface EzReportingAppState {
   delay: number;
   auth: object;
   ws: Socket;
+  tableRef: any;
 }
 
 export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingAppState> {
@@ -86,6 +87,7 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
       delay: 5000,
       auth,
       ws: io(`${window.location.hostname}:${props.webSocketPort}`),
+      tableRef: createRef(EzReportingTable),
     };
   }
 
@@ -260,7 +262,7 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
     }
   };
 
-  downloadManyTask = () => {
+  downloadManyTasks = () => {
     const { selectedItems } = this.state;
 
     if (capabilities.download) {      
@@ -318,6 +320,7 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
     }
 
     this.onSelectionChangeHandler([]);
+    this.state.tableRef.current.clearSelection();
   };
 
   onChange = (selectedSpaces) => {
@@ -394,6 +397,7 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
       isPopoverOpen,
       frequencies,
       tasksInProgress,
+      tableRef,
     } = this.state;
 
     if (accessDenied) {
@@ -524,7 +528,7 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
             name: i18n.translate('ezReporting.generate', { defaultMessage: 'Generate' }),
             icon: <EuiIcon type="importAction" size="m" />,
             onClick: () => {
-              this.downloadManyTask();
+              this.downloadManyTasks();
             },
           },
           {
@@ -618,6 +622,7 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
 
                     <EzReportingTable
                       tasks={tasksList}
+                      ref={tableRef}
                       tasksInProgress={tasksInProgress}
                       spaces={spaces}
                       dashboards={dashboards}

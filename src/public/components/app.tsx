@@ -212,8 +212,9 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
 
         const index = tasks.findIndex(({ id }) => id === task.id);
         if (index >= 0 && index <= tasks.length) {
-          tasks[index] = task;
-          this.setState({ tasks });
+          const tmp = tasks.slice();
+          tmp[index] = task;
+          this.setState({ tasks: tmp });
         }
         toasts.addSuccess({
           title: 'Success',
@@ -296,13 +297,13 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
       const { tasks, ws } = this.state;
 
       ws.on('updateHistory', (taskId) => {
-        httpClient.get(`/api/ezreporting/tasks/history/${taskId}`).then(({ data }) => {
-          const taskHistory = data.history;
+        httpClient.get(`/api/ezreporting/tasks/${taskId}`).then(({ data }) => {
+          const task = data.task;
 
           const index = tasks.findIndex(({ id }) => id === taskId);
           if (index >= 0 && index <= tasks.length) {
             const tmp = tasks.slice();
-            tmp[index].history = taskHistory[0];
+            tmp[index] = task;
             this.setState({ tasks: tmp });
           }
         }).catch((err) => {

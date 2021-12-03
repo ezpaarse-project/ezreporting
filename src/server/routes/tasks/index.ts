@@ -5,6 +5,7 @@ import { PLUGIN_ID } from '../../../common';
 import {
   getAll,
   getBySpace,
+  getTask,
   store,
   update,
   deleteTask,
@@ -36,6 +37,22 @@ export function tasksRouter(router: IRouter) {
       },
     },
     getAll,
+  );
+
+  router.get(
+    {
+      path: '/api/ezreporting/tasks/{taskId}',
+      validate: {
+        params: schema.object({
+          taskId: schema.string(),
+        }),
+      },
+      options: {
+        authRequired: true,
+        tags: [`access:${PLUGIN_ID}-all`],
+      },
+    },
+    getTask,
   );
 
   router.post(

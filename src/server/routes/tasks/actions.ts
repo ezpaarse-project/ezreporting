@@ -225,6 +225,19 @@ export async function getAll(context: RequestHandlerContext, req: KibanaRequest,
   });
 };
 
+export async function getTask(context: RequestHandlerContext, req: KibanaRequest, res: KibanaResponseFactory) {
+  const { params } = req;
+  const task = await getTaskById(params.taskId, 1);
+
+  return res.ok({
+    body: {
+      statusCode: 200,
+      message: 'Task created successfully',
+      data: { task },
+    },
+  });
+};
+
 export async function store(context: RequestHandlerContext, req: KibanaRequest, res: KibanaResponseFactory) {
   const { body } = req;
   const frequency = new Frequency(body.frequency);

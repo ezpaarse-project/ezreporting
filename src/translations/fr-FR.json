@@ -135,6 +135,7 @@
     "ezreporting.unknown": "Inconnu",
     "ezReporting.refresh": "Actualiser",
     "ezReporting.manageYourReportingTasks": "Gérez vos tâches de reporting.",
-    "ezReporting.enableAutoSending": "Activer l'envoie automatique"
+    "ezReporting.enableAutoSending": "Activer l'envoie automatique",
+    "ezReporting.enabled": "Actif"
   }
 }

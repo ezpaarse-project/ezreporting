@@ -3,7 +3,7 @@ import * as path from 'path';
 import fs from 'fs-extra';
 import { EventEmitter } from 'events';
 import formatDate from 'date-fns/format';
-import { fr } from 'date-fns/locale';
+import { enGB } from 'date-fns/locale';
 import { getConfig } from '../config';
 import { getDashboard, buildDashboardUrl } from './dashboard';
 import Frequency from './frequency';
@@ -364,11 +364,9 @@ class Reporter {
         <div style="width: ${viewport.width}px; color: black; text-align: center; line-height: 5px">
           <h1 style="font-size: 14px;"><a href="${kibana.external}/${dashboardUrl}">${dashboardTitle}</a></h1>
           <p style="font-size: 10px;">
-            Rapport couvrant la période
-            du ${formatDate(period.from, 'Pp', { locale: fr })}
-            au ${formatDate(period.to, 'Pp', { locale: fr })}
+            Report covering the period from ${formatDate(period.from, 'Pp', { locale: enGB })} to ${formatDate(period.to, 'Pp', { locale: enGB })}
           </p>
-          <p style="font-size: 10px;">Généré le ${formatDate(new Date(), 'PPPP', { locale: fr })}</p>
+          <p style="font-size: 10px;">Generated on ${formatDate(new Date(), 'PPPP', { locale: enGB })}</p>
         </div>
       `,
       footerTemplate: `

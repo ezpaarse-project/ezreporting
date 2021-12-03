@@ -1,5 +1,5 @@
 import formatDate from 'date-fns/format';
-import { en } from 'date-fns/locale';
+import { enGB } from 'date-fns/locale';
 import { getConfig } from '../config';
 import { logger } from '../../lib/logger';
 import { client } from '../../lib/elastic';
@@ -181,7 +181,7 @@ export async function generateReport(task) {
   const dashboardTitle = (dashboard && dashboard.dashboard && dashboard.dashboard.title) || '';
 
   const frequency = frequencies.find((f) => f.value === taskSource.frequency);
-  const frequencyText = (frequency && frequency.fr && frequency.fr.toLowerCase()) || 'N/A';
+  const frequencyText = (frequency && frequency.text && frequency.text.toLowerCase()) || 'N/A';
 
   const now = new Date();
   let emailSent = false;
@@ -212,7 +212,7 @@ export async function generateReport(task) {
           contact: getConfig('contact'),
           appUrl: getConfig('appUrl'),
           network: getConfig('network'),
-          reportingDate: formatDate(now, 'PPPP', { locale: en }),
+          reportingDate: formatDate(now, 'PPPP', { locale: enGB }),
           title: dashboardTitle,
           frequency: frequencyText,
           dashboardUrl,

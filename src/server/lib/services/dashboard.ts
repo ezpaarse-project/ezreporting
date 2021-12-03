@@ -1,4 +1,4 @@
-import * as rison from 'rison';
+import { encode, decode } from 'rison-node';
 import { client } from '../elastic';
 
 export async function getDashboard(dashboardId, namespace) {
@@ -24,11 +24,11 @@ export function buildDashboardUrl(dashboardId, space, period) {
   }
 
   const { from, to } = period;
-  const gData = rison.encode({
+  const gData = encode({
     time: { from, to },
   });
 
-  const aData = rison.encode({
+  const aData = encode({
     timeRestore: true,
   });
 

@@ -46,9 +46,14 @@ services:
       - SMTP_SECURE=${SMTP_SECURE:-false}
       - SMTP_IGNORE_TLS=${SMTP_IGNORE_TLS:-true}
       - SMTP_REJECT_UNAUTHORIZED=${SMTP_REJECT_UNAUTHORIZED:-false}
+      - DISPLAY
+      - QT_X11_NO_MITSHM=1
+      - _X11_NO_MITSHM=1
+      - _MITSHM=0
     volumes:
       - ./kibana/kibana.dev.yml:/home/kbn-dev/kibana/config/kibana.dev.yml:ro
       - ./src:/home/kbn-dev/kibana/plugins/ezreporting
+      - /tmp/.X11-unix:/tmp/.X11-unix
     networks:
       - elastic
 

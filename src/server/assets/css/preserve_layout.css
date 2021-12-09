@@ -91,3 +91,8 @@ discover-app .discover-table-footer {
 .vis-editor visualization {
   min-height: 0 !important;
 }
+
+.euiDataGrid__controls,
+.euiDataGrid__pagination {
+  display: none;
+}

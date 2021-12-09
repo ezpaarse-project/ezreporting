@@ -3,7 +3,7 @@ import * as path from 'path';
 import fs from 'fs-extra';
 import { EventEmitter } from 'events';
 import formatDate from 'date-fns/format';
-import { enGB } from 'date-fns/locale';
+import { enGB, th } from 'date-fns/locale';
 import { getConfig } from '../config';
 import { getDashboard, buildDashboardUrl } from './dashboard';
 import Frequency from './frequency';
@@ -13,8 +13,6 @@ const elastic = getConfig('elastic');
 const kibana = getConfig('kibana');
 const puppeteerTimeout = getConfig('puppeteerTimeout');
 const logos = getConfig('logos');
-const sender = getConfig('sender');
-
 
 // Useful element classes:
 // https://github.com/elastic/kibana/blob/7.14/x-pack/plugins/reporting/server/lib/layouts/index.ts#L32-L37
@@ -117,6 +115,74 @@ async function waitForCompleteRender(page, visCount) {
   }, selectors);
 }
 
+function changeTables(page) {
+  return page.evaluate(async () => {
+    function delay(time) {
+      return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
+    const tablesHeaders = document.querySelectorAll('.euiDataGrid__content .euiDataGridHeader');
+    await delay(1000);
+
+    tablesHeaders.forEach((el) => {
+      const table = document.createElement('table');
+      table.style.setProperty('border', '1px solid black');
+      table.style.setProperty('border-collapse', 'collapse');
+      table.style.setProperty('width', '100%', 'important');
+      table.style.setProperty('height', '100%', 'important');
+      table.style.setProperty('max-height', '100%', 'important');
+      table.style.setProperty('font-size', '12px');
+
+      const thead = document.createElement('thead');
+      thead.style.setProperty('text-align', 'center');
+      thead.style.setProperty('background-color', '#eee');
+      thead.style.setProperty('font-weight', 'bold');
+
+      const trHead = document.createElement('tr');
+
+      let columns = 0;
+
+      el.childNodes.forEach((node) => {
+        const td = document.createElement('td');
+        td.style.setProperty('border', '1px solid black');
+        td.style.setProperty('text-align', 'center');
+        td.style.setProperty('vertical-align', 'middle');
+
+        td.innerText = node.querySelector('.euiDataGridHeaderCell__content').innerText;
+        trHead.appendChild(td);
+        columns = columns + 1;
+      });
+
+      thead.appendChild(trHead);
+      table.appendChild(thead);
+
+      let tableElements = Array.from(el.parentNode.querySelectorAll('.euiDataGridRowCell'));
+      const tbody = document.createElement('tbody');
+
+      while (tableElements.length > 0) {
+        const elements = tableElements.slice(0, columns);
+        tableElements = tableElements.slice(columns);
+
+        const trBody = document.createElement('tr');
+
+        elements.forEach((el) => {
+          const td = document.createElement('td');
+          td.style.setProperty('border', '1px solid black');
+          td.style.setProperty('text-align', 'center');
+          td.style.setProperty('vertical-align', 'middle');
+
+          td.innerText = el.querySelector('.tbvChartCellContent').innerText;
+          trBody.appendChild(td);
+        });
+        tbody.appendChild(trBody);
+        table.appendChild(tbody);
+      }
+
+      el.parentNode.parentNode.replaceChildren(table);
+    });
+  });
+}
+
 class Reporter {
   constructor() {
     this.browser = null;
@@ -133,6 +199,7 @@ class Reporter {
     this.browser = await puppeteer.launch({
       ignoreHTTPSErrors: true,
       headless: true,
+      devtools: false,
       slowMo: 10,
       ignoreDefaultArgs: ['--enable-automation'],
       defaultViewport: null,
@@ -279,8 +346,8 @@ class Reporter {
       margin: {
         left: 50,
         right: 50,
-        top: 100,
-        bottom: 60,
+        top: 85,
+        bottom: 45,
       },
     };
 
@@ -335,6 +402,8 @@ class Reporter {
 
     await insertStyles(page, styles);
     await waitForCompleteRender(page, visCount);
+
+    await changeTables(page);
 
     if (print) {
       await positionElements(page, viewport);

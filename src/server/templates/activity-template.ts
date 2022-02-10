@@ -18,16 +18,10 @@ export const activityTemplate = {
         type: 'date',
         format: 'epoch_millis',
       },
-      responseTime: { type: 'integer' },
       action: { type: 'keyword' },
-      index: { type: 'keyword' },
-      user: {
-        properties: {
-          name: { type: 'keyword' },
-          roles: { type: 'keyword' },
-          idp: { type: 'keyword' },
-        },
-      },
+      user: { type: 'keyword' },
+      taskId: { type: 'keyword' },
+      spaceId: { type: 'keyword' },
       request: {
         properties: {
           method: { type: 'keyword' },
@@ -39,19 +33,6 @@ export const activityTemplate = {
               nostore: { type: 'keyword' },
             },
           },
-        },
-      },
-      response: {
-        properties: {
-          status: { type: 'integer' },
-          body: { type: 'keyword' },
-        },
-      },
-      taskId: { type: 'keyword' },
-      metadata: {
-        properties: {
-          dashboardName: { type: 'keyword' },
-          space: { type: 'keyword' },
         },
       },
     },

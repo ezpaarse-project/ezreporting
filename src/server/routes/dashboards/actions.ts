@@ -6,6 +6,7 @@ import { isSuperuser } from '../../lib/isSuperuser';
 import { client } from '../../lib/elastic';
 import { logger } from '../../lib/logger';
 import { security } from '../../lib/security';
+import { save as saveActivity } from '../../lib/activity';
 
 async function getDashboards(space?: string) {
   const bool = {
@@ -68,8 +69,12 @@ export async function getAll(context: RequestHandlerContext, req: KibanaRequest,
   const isAdmin = isSuperuser({ security, req });
   if (!isAdmin) { return res.forbidden(); }
 
+  const { spaceId } = context.core?.savedObjects?.client;
+
   logger.info('Get all dashboards');
   const dashboards = await getDashboards();
+
+  await saveActivity('reporting/getDashboards', spaceId, null, req, context);
 
   return res.ok({
     body: {
@@ -85,6 +90,8 @@ export async function getBySpace(context: RequestHandlerContext, req: KibanaRequ
 
   logger.info('Get all dashboards');
   const dashboards = await getDashboards(spaceId);
+
+  await saveActivity('reporting/getDashboardsBySpace', spaceId, null, req, context);
 
   return res.ok({
     body: {

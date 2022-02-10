@@ -8,7 +8,7 @@ import { client } from '../../lib/elastic';
 import { getConfig } from '../../lib/config';
 import { security } from '../../lib/security';
 import Frequency from '../../lib/services/frequency';
-import { socket } from '../../ws';
+import { save as saveActivity } from '../../lib/activity';
 
 async function getTaskHistory(id: number, size: number = 10000) {
   try {
@@ -200,6 +200,8 @@ export async function getBySpace(context: RequestHandlerContext, req: KibanaRequ
   logger.info(`Get tasks from [${spaceId}] space`);
   const tasks: Array<object> = await getTasks(spaceId);
 
+  await saveActivity('reporting/list', spaceId, null, req, context);
+
   return res.ok({
     body: {
       statusCode: 200,
@@ -213,8 +215,12 @@ export async function getAll(context: RequestHandlerContext, req: KibanaRequest,
   const isAdmin = isSuperuser({ security, req });
   if (!isAdmin) { return res.forbidden(); }
 
+  const { spaceId } = context.core?.savedObjects?.client;
+
   logger.info('Get all tasks');
   const tasks: Array<object> = await getTasks();
+
+  await saveActivity('reporting/list', spaceId, null, req, context);
 
   return res.ok({
     body: {
@@ -226,13 +232,16 @@ export async function getAll(context: RequestHandlerContext, req: KibanaRequest,
 };
 
 export async function getTask(context: RequestHandlerContext, req: KibanaRequest, res: KibanaResponseFactory) {
+  const { spaceId } = context.core?.savedObjects?.client;
   const { params } = req;
   const task = await getTaskById(params.taskId, 1);
+
+  await saveActivity('reporting/list', spaceId, params.taskId, req, context);
 
   return res.ok({
     body: {
       statusCode: 200,
-      message: 'Task created successfully',
+      message: 'Task recovered successfully',
       data: { task },
     },
   });
@@ -270,6 +279,8 @@ export async function store(context: RequestHandlerContext, req: KibanaRequest, 
 
   const task = await getTaskById(taskId, 1);
 
+  await saveActivity('reporting/store', spaceId, taskId, req, context);
+
   return res.ok({
     body: {
       statusCode: 200,
@@ -281,8 +292,10 @@ export async function store(context: RequestHandlerContext, req: KibanaRequest, 
 
 export async function update(context: RequestHandlerContext, req: KibanaRequest, res: KibanaResponseFactory) {
   const now = new Date();
+  const { spaceId } = context.core?.savedObjects?.client;
   const { body, params } = req;
   const { taskId: id } = params;
+  
   const frequency = new Frequency(body.frequency);
 
   if (!frequency.isValid()) {
@@ -309,6 +322,8 @@ export async function update(context: RequestHandlerContext, req: KibanaRequest,
 
   const task = await getTaskById(id, 1);
 
+  await saveActivity('reporting/update', spaceId, id, req, context);
+
   return res.ok({
     body: {
       statusCode: 200,
@@ -320,6 +335,7 @@ export async function update(context: RequestHandlerContext, req: KibanaRequest,
 
 export async function deleteTask(context: RequestHandlerContext, req: KibanaRequest, res: KibanaResponseFactory) {
   const { taskId } = req.params;
+  const { spaceId } = context.core?.savedObjects?.client;
 
   try {
     await client.delete({
@@ -349,6 +365,8 @@ export async function deleteTask(context: RequestHandlerContext, req: KibanaRequ
     return res.customError({ statusCode: 500, body: err });
   }
 
+  await saveActivity('reporting/delete', spaceId, taskId, req, context);
+
   return res.ok({
     body: {
       statusCode: 200,
@@ -360,7 +378,8 @@ export async function deleteTask(context: RequestHandlerContext, req: KibanaRequ
 
 export async function history(context: RequestHandlerContext, req: KibanaRequest, res: KibanaResponseFactory) {
   const { taskId: id } = req.params;
-  
+  const { spaceId } = context.core?.savedObjects?.client;
+
   let history = [];
   try {
     const { body: data } = await client.search({
@@ -404,6 +423,8 @@ export async function history(context: RequestHandlerContext, req: KibanaRequest
     return res.customError({ statusCode: 500, body: err });
   }
 
+  await saveActivity('reporting/update', spaceId, id, req, context);
+
   return res.ok({
     body: {
       statusCode: 200,
@@ -415,6 +436,7 @@ export async function history(context: RequestHandlerContext, req: KibanaRequest
 
 export async function download(context: RequestHandlerContext, req: KibanaRequest, res: KibanaResponseFactory) {
   const { taskId } = req.params;
+  const { spaceId } = context.core?.savedObjects?.client;
   
   let task;
   try {
@@ -443,6 +465,8 @@ export async function download(context: RequestHandlerContext, req: KibanaReques
     logger.error(err);
     return res.customError({ statusCode: 500, body: err });
   }
+
+  await saveActivity('reporting/download', spaceId, taskId, req, context);
 
   return res.ok({
     body: {

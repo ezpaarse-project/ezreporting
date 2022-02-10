@@ -121,17 +121,18 @@ function changeTables(page) {
       return new Promise((resolve) => setTimeout(resolve, time));
     }
 
-    const tablesHeaders = document.querySelectorAll('.euiDataGrid__content .euiDataGridHeader');
+    const embPanelContent = Array.from(document.querySelectorAll('.embPanel__content'))
+      .filter((el) => el.querySelector('.euiDataGridHeader'));
     await delay(1000);
 
-    tablesHeaders.forEach((el) => {
+    embPanelContent.forEach((embPanel) => {
+      const tableHeader = embPanel.querySelector('.euiDataGridHeader');
+
       const table = document.createElement('table');
-      table.style.setProperty('border', '1px solid black');
       table.style.setProperty('border-collapse', 'collapse');
       table.style.setProperty('width', '100%', 'important');
-      table.style.setProperty('height', '100%', 'important');
       table.style.setProperty('max-height', '100%', 'important');
-      table.style.setProperty('font-size', '12px');
+      table.style.setProperty('font-size', '14px');
 
       const thead = document.createElement('thead');
       thead.style.setProperty('text-align', 'center');
@@ -139,14 +140,16 @@ function changeTables(page) {
       thead.style.setProperty('font-weight', 'bold');
 
       const trHead = document.createElement('tr');
+      trHead.style.setProperty('height', '24px');
 
       let columns = 0;
 
-      el.childNodes.forEach((node) => {
+      tableHeader.childNodes.forEach((node) => {
         const td = document.createElement('td');
         td.style.setProperty('border', '1px solid black');
         td.style.setProperty('text-align', 'center');
         td.style.setProperty('vertical-align', 'middle');
+        td.style.setProperty('height', '24px');
 
         td.innerText = node.querySelector('.euiDataGridHeaderCell__content').innerText;
         trHead.appendChild(td);
@@ -156,7 +159,7 @@ function changeTables(page) {
       thead.appendChild(trHead);
       table.appendChild(thead);
 
-      let tableElements = Array.from(el.parentNode.querySelectorAll('.euiDataGridRowCell'));
+      let tableElements = Array.from(embPanel.querySelectorAll('.euiDataGridRowCell'));
       const tbody = document.createElement('tbody');
 
       while (tableElements.length > 0) {
@@ -164,12 +167,14 @@ function changeTables(page) {
         tableElements = tableElements.slice(columns);
 
         const trBody = document.createElement('tr');
+        trBody.style.setProperty('height', '24px');
 
         elements.forEach((el) => {
           const td = document.createElement('td');
           td.style.setProperty('border', '1px solid black');
           td.style.setProperty('text-align', 'center');
           td.style.setProperty('vertical-align', 'middle');
+          td.style.setProperty('height', '24px');
 
           td.innerText = el.querySelector('.tbvChartCellContent').innerText;
           trBody.appendChild(td);
@@ -178,7 +183,7 @@ function changeTables(page) {
         table.appendChild(tbody);
       }
 
-      el.parentNode.parentNode.replaceChildren(table);
+      embPanel.replaceChildren(table);
     });
   });
 }
@@ -403,9 +408,9 @@ class Reporter {
     await insertStyles(page, styles);
     await waitForCompleteRender(page, visCount);
 
-    await changeTables(page);
-
     if (print) {
+      await changeTables(page);
+
       await positionElements(page, viewport);
     }
 

@@ -5,10 +5,13 @@ import { isSuperuser } from '../../lib/isSuperuser';
 import { client } from '../../lib/elastic';
 import { logger } from '../../lib/logger';
 import { security } from '../../lib/security';
+import { save as saveActivity } from '../../lib/activity';
 
 export async function getSpaces(context: RequestHandlerContext, req: KibanaRequest, res: KibanaResponseFactory) {
   const isAdmin = isSuperuser({ security, req });
   if (!isAdmin) { return res.forbidden(); }
+
+  const { spaceId } = context.core?.savedObjects?.client;
 
   logger.info('Get Kibana spaces');
   let spacesSource = []; 
@@ -46,6 +49,8 @@ export async function getSpaces(context: RequestHandlerContext, req: KibanaReque
       color: source.space.color || '#00bfb3',
     }));
   }
+
+  await saveActivity('reporting/getSpaces', spaceId, null, req, context);
 
   return res.ok({
     body: {

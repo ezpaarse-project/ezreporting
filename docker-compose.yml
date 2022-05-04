@@ -30,6 +30,7 @@ services:
       context: ./
       args:
         - WEB_SOCKET_PORT=${WEB_SOCKET_PORT:-3000}
+        - KIBANA_VERSION=${KIBANA_VERSION:-7.14}
     ports:
       - 5601:5601
       - 5603:5603

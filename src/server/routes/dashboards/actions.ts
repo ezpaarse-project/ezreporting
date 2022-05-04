@@ -1,7 +1,6 @@
 import get from 'lodash.get';
 import { RequestHandlerContext, KibanaRequest } from 'kibana/server';
 import { KibanaResponseFactory } from '../../../../../src/core/server';
-import { SecurityPluginStart } from '../../../../../security/server';
 import { isSuperuser } from '../../lib/isSuperuser';
 import { client } from '../../lib/elastic';
 import { logger } from '../../lib/logger';

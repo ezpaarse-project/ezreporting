@@ -77,7 +77,7 @@ export class EzreportingPlugin
       [this.config.activityIndex]: activityTemplate,
     });
 
-    // Create ezreporting indices
+    // Create ezreporting roles
     await createRoles();
 
     // Create websocket server

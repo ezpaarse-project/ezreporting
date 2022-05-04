@@ -92,7 +92,7 @@ export class EzReportingApp extends Component<EzReportingAppDeps, EzReportingApp
   }
 
   componentDidMount = async () => {
-    const { ws, tasks } = this.state;
+    const { ws } = this.state;
 
     ws.on('connect', () => {
       console.log('Socket client connected.');

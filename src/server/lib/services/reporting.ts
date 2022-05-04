@@ -40,7 +40,7 @@ async function getTasks() {
     },
   });
 
-  return (res && res.body && res.body.hits && res.body.hits.hits) || [];
+  return (res?.body?.hits?.hits) || [];
 }
 
 function wait(ms) {

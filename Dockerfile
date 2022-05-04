@@ -2,6 +2,7 @@ FROM node:14.17.6
 LABEL maintainer="ezTEAM <ezpaarse@couperin.org>"
 
 ARG WEB_SOCKET_PORT
+ARG KIBANA_VERSION
 
 RUN apt-get update \
   && apt-get install -y wget gnupg \
@@ -17,11 +18,9 @@ RUN useradd -rm -d /home/kbn-dev -s /bin/bash -u 8854 kbn-dev \
 
 USER kbn-dev
 
-RUN mkdir /home/kbn-dev/kibana
-
 WORKDIR /home/kbn-dev/kibana
 
-RUN git clone --depth 1 --branch 7.14 --single-branch --progress --verbose https://github.com/elastic/kibana .
+RUN git clone --depth 1 --branch $KIBANA_VERSION --single-branch --progress --verbose https://github.com/elastic/kibana .
 RUN yarn kbn bootstrap
 
 EXPOSE 5601

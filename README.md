@@ -59,8 +59,42 @@ You need to run the following command at the location where you installed Kibana
 $ bin/kibana-plugin install https://github.com/ezpaarse-project/ezreporting/releases/download/vX.X.X/ezReporting-7.14.zip
 ```
 
+### Environnement variables (Production)
 
-### Environnement variables
+| Name | Description |
+| --- | --- |
+| EZREPORTING_APPLICATION_NAME | Reporting plugin name displayed in Kibana ``(default: ezReporting)`` |
+| EZREPORTING_APPLICATION_URL | Reporting application URL used in mail ``(default: http://localhost:5601/kibana)`` |
+| EZREPORTING_FREQUENCIES | Task ferequenices |
+| EZREPORTING_CRON | CRON to start generation task ``(default: 0 0 1 * * *)`` |
+| EZREPORTING_PUPPETEER_TIMEOUT | Timeout for puppeteer ``(default: 60000)`` |
+| EZREPORTING_SMTP_HOST | SMTP Server host ``(default: localhost)`` |
+| EZREPORTING_SMTP_PORT | SMTP Server port ``(default: 25)`` |
+| EZREPORTING_SMTP_SECURE | SMTP secure ``(default: false)`` |
+| EZREPORTING_SMTP_IGNORE_TLS | SMTP ignore TLS ``(default: false)`` |
+| EZREPORTING_SMTP_REJECT_UNAUTHORIZED | SMTP reject unauthorized ``(default: false)`` |
+| EZREPORTING_EMAIL_ATTEMPTS | Email attempts ``(default: 5)`` |
+| EZREPORTING_EMAIL_INTERVAL | Email interval attempts ``(default: 2000)`` |
+| EZREPORTING_EMAIL_COLOR | Email banner color ``(default: #2980b9)`` |
+| EZREPORTING_EMAIL_BACKGROUND_COLOR | Email background color ``(default: #2980b9)`` |
+| EZREPORTING_TWITTER | Twitter URL ``(default: <empty>)`` |
+| EZREPORTING_GITHUB | GitHub URL ``(default: <empty>)`` |
+| EZREPORTING_YOUTUBE | Youtube URL ``(default: <empty>)`` |
+| EZREPORTING_EMAIL_CONTACT | ezReporting email contact ``(default: reporting@ezreporting.org)`` |
+| EZREPORTING_EMAIL_SENDER | ezReporting email sender ``(default: reporting@ezreporting.org)`` |
+| EZREPORTING_INDEX | ezReporting index task name ``(default: .ezreporting)`` |
+| EZREPORTING_HISTORY_INDEX | ezReporting index task history name ``(default: .ezreporting-history)`` |
+| EZREPORTING_ACTIVITY_INDEX | ezReporting index task activity name ``(default: .ezreporting-activity)`` |
+| EZREPORTING_ROLE_NAME | ezReporting role name (used for all and read only) ``(default: ezreporting)`` |
+| ELASTICSEARCH_BASE_URL | ElasticSearch base URL ``(default: http://elastic:9200)`` |
+| ELASTICSEARCH_USERNAME | ElasticSearch username ``(default: elastic)`` |
+| ELASTICSEARCH_PASSWORD | ElasticSearch password ``(default: changeme)`` |
+| EZREPORTING_KIBANA_INTERNAL_URL | Kibana internal URL (for API request) ``(default: http://localhost:5601/kibana)`` |
+| EZREPORTING_KIBANA_EXTERNAL_URL | Kibana external URL (for email URl) ``(default: http://localhost:5601/kibana)`` |
+| EZREPORTING_LOGOS | Logos displayed in report footer ``(default: [ { file: 'images/logo.png', link: 'kibana' } ])`` |
+| EZREPORTING_WEB_SOCKET_PORT | WebSocket port ``(default: 3000)`` |
+
+## Environnement variables (Development)
 
 | Name | Description |
 | --- | --- |

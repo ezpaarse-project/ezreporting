@@ -49,17 +49,17 @@ export interface IServerConfig {
 
 export const configSchema = schema.object({
   applicationName: schema.string({
-    defaultValue: process.env.APPLICATION_NAME || 'ezReporting',
+    defaultValue: process.env.EZREPORTING_APPLICATION_NAME || 'ezReporting',
   }),
   appUrl: schema.string({
-    defaultValue: process.env.APPLICATION_URL || 'http://localhost:5601/kibana',
+    defaultValue: process.env.EZREPORTING_APPLICATION_URL || 'http://localhost:5601/kibana',
   }),
   frequencies: schema.arrayOf(schema.object({
     fr: schema.string(),
     text: schema.string(),
     value: schema.string(),
   }), {
-    defaultValue: process.env.FREQUENCIES || [
+    defaultValue: process.env.EZREPORTING_FREQUENCIES || [
       { fr: 'Hebdomadaire', text: 'Weekly', value: '1w' },
       { fr: 'Mensuel', text: 'Monthly', value: '1M' },
       { fr: 'Trimestriel', text: 'Quarterly', value: 'quarterly' },
@@ -68,10 +68,10 @@ export const configSchema = schema.object({
     ],
   }),
   cron: schema.string({
-    defaultValue: process.env.CRON || '0 0 1 * * *',
+    defaultValue: process.env.EZREPORTING_CRON || '0 0 1 * * *',
   }),
   puppeteerTimeout: schema.number({
-    defaultValue: process.env.PUPPETEER_TIMEOUT || 60000,
+    defaultValue: process.env.EZREPORTING_PUPPETEER_TIMEOUT || 60000,
   }),
   smtp: schema.object({
     host: schema.string({ defaultValue: 'localhost' }),
@@ -83,12 +83,12 @@ export const configSchema = schema.object({
     }),
   }, {
     defaultValue: {
-      host: process.env.SMTP_HOST || 'localhost',
-      port: process.env.SMTP_PORT || 25,
-      secure: process.env.SMTP_SECURE || false,
-      ignoreTLS: process.env.SMTP_IGNORE_TLS || false,
+      host: process.env.EZREPORTING_SMTP_HOST || 'localhost',
+      port: process.env.EZREPORTING_SMTP_PORT || 25,
+      secure: process.env.EZREPORTING_SMTP_SECURE || false,
+      ignoreTLS: process.env.EZREPORTING_SMTP_IGNORE_TLS || false,
       tls: {
-        rejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED || false,
+        rejectUnauthorized: process.env.EZREPORTING_SMTP_REJECT_UNAUTHORIZED || false,
       },
     },
   }),
@@ -101,11 +101,11 @@ export const configSchema = schema.object({
     }),
   }, {
     defaultValue: {
-      attempts: process.env.EMAIL_ATTEMPTS || 5,
-      interval: process.env.EMAIL_INTERVAL || 2000,
+      attempts: process.env.EZREPORTING_EMAIL_ATTEMPTS || 5,
+      interval: process.env.EZREPORTING_EMAIL_INTERVAL || 2000,
       template: {
-        color: process.env.EMAIL_COLOR || '#2980b9',
-        backgroundColor: process.env.EMAIL_BACKGROUND_COLOR || '#f7f7f7',
+        color: process.env.EZREPORTING_EMAIL_COLOR || '#2980b9',
+        backgroundColor: process.env.EZREPORTING_EMAIL_BACKGROUND_COLOR || '#f7f7f7',
       }
     },
   }),
@@ -115,38 +115,38 @@ export const configSchema = schema.object({
     youtube: schema.string({ defaultValue: null }),
   }, {
     defaultValue: {
-      twitter: process.env.TWITTER || null,
-      github: process.env.GITHUB || null,
-      youtube: process.env.YOUTUBE || null,
+      twitter: process.env.EZREPORTING_TWITTER || null,
+      github: process.env.EZREPORTING_GITHUB || null,
+      youtube: process.env.EZREPORTING_YOUTUBE || null,
     },
   }),
   contact: schema.string({
-    defaultValue: process.env.EMAIL_CONTACT || 'reporting@ezreporting.org',
+    defaultValue: process.env.EZREPORTING_EMAIL_CONTACT || 'reporting@ezreporting.org',
   }),
   sender: schema.string({
-    defaultValue: process.env.EMAIL_SENDER || 'reporting@ezreporting.org',
+    defaultValue: process.env.EZREPORTING_EMAIL_SENDER || 'reporting@ezreporting.org',
   }),
   index: schema.string({
-    defaultValue: process.env.REPORTING_INDEX || '.ezreporting',
+    defaultValue: process.env.EZREPORTING_INDEX || '.ezreporting',
   }),
   historyIndex: schema.string({
-    defaultValue: process.env.REPORTING_HISTORY_INDEX || '.ezreporting-history',
+    defaultValue: process.env.EZREPORTING_HISTORY_INDEX || '.ezreporting-history',
   }),
   activityIndex: schema.string({
-    defaultValue: process.env.REPORTING_ACTIVITY_INDEX || '.ezreporting-activity',
+    defaultValue: process.env.EZREPORTING_ACTIVITY_INDEX || '.ezreporting-activity',
   }),
   roleName: schema.string({
-    defaultValue: process.env.REPORTING_ROLE_NAME || 'ezreporting',
+    defaultValue: process.env.EZREPORTING_ROLE_NAME || 'ezreporting',
   }),
   elastic: schema.object({
     baseUrl: schema.string({ defaultValue: 'http://elastic:9200' }),
     username: schema.string({ defaultValue: 'elastic' }),
     password: schema.number({ defaultValue: 'changeme' }),
   }, {
-    defaultValue: process.env.ELASTICSEARCH || {
-      baseUrl: 'http://elastic:9200',
-      username: 'elastic',
-      password: 'changeme',
+    defaultValue: {
+      baseUrl: process.env.ELASTICSEARCH_BASE_URL || 'http://elastic:9200',
+      username: process.env.ELASTICSEARCH_USERNAME || 'elastic',
+      password: process.env.ELASTICSEARCH_PASSWORD || 'changeme',
     },
   }),
   kibana: schema.object({
@@ -154,20 +154,20 @@ export const configSchema = schema.object({
     external: schema.number({ defaultValue: 'http://localhost:5601/kibana' }),
   }, {
     defaultValue: {
-      internal: process.env.KIBANA_INTERNAL_URL || 'http://localhost:5601/kibana',
-      external: process.env.KIBANA_EXTERNAL_URL || 'http://localhost:5601/kibana',
+      internal: process.env.EZREPORTING_KIBANA_INTERNAL_URL || 'http://localhost:5601/kibana',
+      external: process.env.EZREPORTING_KIBANA_EXTERNAL_URL || 'http://localhost:5601/kibana',
     },
   }),
   logos: schema.arrayOf(schema.object({
     file: schema.string(),
     link: schema.string(),
   }), {
-    defaultValue: process.env.LOGOS || [
+    defaultValue: process.env.EZREPORTING_LOGOS || [
       { file: 'images/logo.png', link: 'kibana' }
     ],
   }),
   webSocketPort: schema.number({
-    defaultValue: process.env.WEB_SOCKET_PORT || 3000,
+    defaultValue: process.env.EZREPORTING_WEB_SOCKET_PORT || 3000,
   }),
 });
 

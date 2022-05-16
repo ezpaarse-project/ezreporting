@@ -6,13 +6,3 @@ server.host: 0.0.0.0
 xpack.security.enabled: true
 xpack.reporting.roles.enabled: false
 xpack.reporting.capture.browser.chromium.disableSandbox: true
-# xpack.security.authc.providers:
-#   basic.basic1:
-#     order: 0
-#     icon: "logoElasticsearch"
-#     hint: "Log in with Elastic"
-#   anonymous.anonymous1:
-#     order: 1
-#     credentials:
-#       username: "steven"
-#       password: "steven"

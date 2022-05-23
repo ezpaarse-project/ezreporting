@@ -61,7 +61,11 @@ services:
   maildev:
     image: djfarrelly/maildev
     ports:
-      - 1080:80
+      - "1080:80"
+      - "1025:25"
+    environment:
+      - MAILDEV_OUTGOING_USER=user
+      - MAILDEV_OUTGOING_PASS=password
     networks:
       - elastic
 

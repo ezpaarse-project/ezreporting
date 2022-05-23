@@ -81,6 +81,10 @@ export const configSchema = schema.object({
     tls: schema.object({
       rejectUnauthorized: schema.boolean({ defaultValue: false }),
     }),
+    auth: schema.object({
+      user: schema.string({ defaultValue: null }),
+      pass: schema.string({ defaultValue: null }),
+    }),
   }, {
     defaultValue: {
       host: process.env.EZREPORTING_SMTP_HOST || 'localhost',
@@ -89,6 +93,10 @@ export const configSchema = schema.object({
       ignoreTLS: process.env.EZREPORTING_SMTP_IGNORE_TLS || false,
       tls: {
         rejectUnauthorized: process.env.EZREPORTING_SMTP_REJECT_UNAUTHORIZED || false,
+      },
+      auth: {
+        user: process.env.EZREPORTING_SMTP_AUTH_USER,
+        pass: process.env.EZREPORTING_SMTP_AUTH_PASSWORD,
       },
     },
   }),

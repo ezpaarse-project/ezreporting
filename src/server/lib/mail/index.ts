@@ -16,6 +16,7 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: JSON.parse(getConfig('smtp.tls.rejectUnauthorized')),
   },
+  auth: getConfig('smtp.auth'),
 });
 
 nunjucks.configure(templatesDir);

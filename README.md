@@ -73,6 +73,8 @@ $ bin/kibana-plugin install https://github.com/ezpaarse-project/ezreporting/rele
 | EZREPORTING_SMTP_SECURE | SMTP secure ``(default: false)`` |
 | EZREPORTING_SMTP_IGNORE_TLS | SMTP ignore TLS ``(default: false)`` |
 | EZREPORTING_SMTP_REJECT_UNAUTHORIZED | SMTP reject unauthorized ``(default: false)`` |
+| EZREPORTING_SMTP_AUTH_USER | SMTP auth user ``(default: null)`` |
+| EZREPORTING_SMTP_AUTH_PASSWORD | SMTP auth password ``(default: null)`` |
 | EZREPORTING_EMAIL_ATTEMPTS | Email attempts ``(default: 5)`` |
 | EZREPORTING_EMAIL_INTERVAL | Email interval attempts ``(default: 2000)`` |
 | EZREPORTING_EMAIL_COLOR | Email banner color ``(default: #2980b9)`` |

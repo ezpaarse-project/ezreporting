@@ -55,11 +55,16 @@ export class EzreportingPlugin
     setConfig(this.config);
     getLogger(this.logger);
     getEsClient({
-      node: this.config.elastic.baseUrl,
-      auth: {
-        username: this.config.elastic.username,
-        password: this.config.elastic.password,
-      }
+      node: {
+        url: new URL(this.config.elastic.baseUrl),
+        auth: {
+          username: this.config.elastic.username,
+          password: this.config.elastic.password,
+        },
+      },
+      ssl: {
+        rejectUnauthorized: false,
+      },
     });
   }
 

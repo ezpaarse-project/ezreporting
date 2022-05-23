@@ -22,6 +22,6 @@ kbn-start:
 	@docker-compose up -d kibana
 
 build:
-	@docker-compose run --rm -u kbn-dev kibana bash -c 'cd plugins/ezreporting/; yarn build --kibana-version ${KIBANA_VERSION}'
+	@docker-compose run --rm -u kbn-dev kibana bash -c 'cd plugins/ezreporting/; yarn build --kibana-version ${KIBANA_VERSION:-7.14.1}'
 
 .PHONY: help es-start kbn-init kbn-build kbn-start start

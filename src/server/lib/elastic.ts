@@ -4,17 +4,21 @@ import { ApiKeyAuth, BasicAuth } from '@elastic/elasticsearch/lib/pool';
 
 export let client;
 
-export function getEsClient({
-  node,
-  auth,
-}: {
-  node: string;
-  auth?: BasicAuth | ApiKeyAuth;
-}) {
-  client = new Client({
-    node,
-    auth,
-  });
+interface IClient {
+  node: {
+    url: URL,
+    auth: {
+      username: string,
+      password: string,
+    },
+  },
+  ssl: {
+    rejectUnauthorized: boolean,
+  },
+}
+
+export function getEsClient(conf: IClient) {
+  client = new Client(conf);
 
   return client as unknown;
 }
